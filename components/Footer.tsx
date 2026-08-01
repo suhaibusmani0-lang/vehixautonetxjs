@@ -2,7 +2,6 @@ import Link from "next/link";
 import { Mail, Phone, MapPin } from "lucide-react";
 import vehixLogo from "@/assets/vehix-logo.png";
 
-// Lucide ne brand icons hata diye hain, isliye exact same design ke liye SVG yahan add kiye hain
 const Facebook = (props: any) => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>;
 const Twitter = (props: any) => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><path d="M22 4s-.7 2.1-2 3.4c1.6 10-9.4 17.3-18 11.6 2.2.1 4.4-.6 6-2C3 15.5.5 9.6 3 5c2.2 2.6 5.6 4.1 9 4-.9-4.2 4-6.6 7-3.8 1.1 0 3-1.2 3-1.2z"/></svg>;
 const Instagram = (props: any) => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><rect width="20" height="20" x="2" y="2" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" x2="17.51" y1="6.5" y2="6.5"/></svg>;
@@ -63,13 +62,11 @@ const Footer = () => {
   return (
     <footer className="bg-foreground text-background">
       <div className="container mx-auto px-4 py-12">
-        {/* Main footer content */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-8">
-          {/* Company info */}
           <div className="lg:col-span-2">
             <Link href="/" className="inline-block mb-4">
               <img 
-                src={vehixLogo.src || vehixLogo} 
+                src={(vehixLogo as any).src || vehixLogo} 
                 alt="Vehix Auto Parts" 
                 className="h-12 w-auto brightness-0 invert"
               />
@@ -79,7 +76,6 @@ const Footer = () => {
               Serving customers nationwide with quality parts and exceptional service since 2020.
             </p>
             
-            {/* Contact info */}
             <div className="space-y-3">
               <div className="flex items-center gap-3">
                 <Phone className="h-4 w-4 text-primary" />
@@ -96,7 +92,6 @@ const Footer = () => {
             </div>
           </div>
 
-          {/* Footer links */}
           {footerSections.map((section) => (
             <div key={section.title}>
               <h3 className="font-semibold text-lg mb-4">{section.title}</h3>
@@ -116,7 +111,6 @@ const Footer = () => {
           ))}
         </div>
 
-        {/* Newsletter signup */}
         <div className="border-t border-background/20 mt-12 pt-8">
           <div className="max-w-md mx-auto text-center lg:text-left lg:max-w-none lg:flex lg:items-center lg:justify-between">
             <div className="lg:flex-1">
@@ -140,21 +134,18 @@ const Footer = () => {
           </div>
         </div>
 
-        {/* Bottom bar */}
         <div className="border-t border-background/20 mt-8 pt-8">
           <div className="flex flex-col lg:flex-row items-center justify-between gap-4">
             <div className="text-background/80 text-sm">
               © {currentYear} Vehix Auto Parts. All rights reserved.
             </div>
             
-            {/* Trust badges */}
             <div className="flex items-center gap-6 text-sm text-background/80">
               <span>🔒 SSL Secured</span>
               <span>📦 Free Shipping $99+</span>
               <span>🛡️ 30-Day Returns</span>
             </div>
             
-            {/* Social links */}
             <div className="flex items-center gap-4">
               {socialLinks.map((social) => {
                 const Icon = social.icon;
@@ -173,7 +164,6 @@ const Footer = () => {
           </div>
         </div>
 
-        {/* Additional certifications */}
         <div className="text-center mt-8 pt-8 border-t border-background/20">
           <p className="text-xs text-background/60">
             Fitment Guarantee • 12-Month Warranty • Authorized Dealer • Made in USA
