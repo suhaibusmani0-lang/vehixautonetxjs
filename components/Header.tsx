@@ -5,7 +5,6 @@ import Link from "next/link";
 import { Search, ShoppingCart, Menu, X, Phone, Mail } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-// Make sure your logo is placed in the 'assets' folder or adjust the path
 import vehixLogo from "@/assets/vehix-logo.png";
 
 const Header = () => {
@@ -50,9 +49,7 @@ const Header = () => {
           {/* Logo */}
           <Link href="/" className="flex items-center">
             <img 
-              // Note: In Next.js, if you import an image directly, you might need to use .src 
-              // like this: src={vehixLogo.src}. If it shows an error, add .src here.
-              src={vehixLogo.src || vehixLogo} 
+              src={(vehixLogo as any).src || vehixLogo} 
               alt="Vehix Auto Parts" 
               className="h-12 w-auto"
             />
