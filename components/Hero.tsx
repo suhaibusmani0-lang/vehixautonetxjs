@@ -72,7 +72,7 @@ const Hero = () => {
                   Find Parts for Your Vehicle
                 </h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
-                  <Select value={selectedYear} onValueChange={setSelectedYear}>
+                  <Select value={selectedYear} onValueChange={(val) => setSelectedYear(val || "")}>
                     <SelectTrigger>
                       <SelectValue placeholder="Year" />
                     </SelectTrigger>
@@ -88,7 +88,7 @@ const Hero = () => {
                   <Select
                     value={selectedMake}
                     onValueChange={(value) => {
-                      setSelectedMake(value);
+                      setSelectedMake(value || "");
                       setSelectedModel("");
                     }}
                   >
@@ -106,7 +106,7 @@ const Hero = () => {
 
                   <Select 
                     value={selectedModel} 
-                    onValueChange={setSelectedModel}
+                    onValueChange={(val) => setSelectedModel(val || "")}
                     disabled={!selectedMake}
                   >
                     <SelectTrigger>
@@ -121,7 +121,7 @@ const Hero = () => {
                     </SelectContent>
                   </Select>
 
-                  <Select value={selectedPart} onValueChange={setSelectedPart}>
+                  <Select value={selectedPart} onValueChange={(val) => setSelectedPart(val || "")}>
                     <SelectTrigger>
                       <SelectValue placeholder="Part" />
                     </SelectTrigger>
