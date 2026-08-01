@@ -3,12 +3,13 @@
   "name": "vehixautonetxjs",
   "main": ".open-next/worker.js",
   "compatibility_date": "2026-08-01",
-  "observability": {
-    "enabled": true
-  },
   "compatibility_flags": [
     "nodejs_compat"
   ],
+  "assets": {
+    "directory": ".open-next/assets",
+    "binding": "ASSETS"
+  },
   "services": [
     {
       "binding": "WORKER_SELF_REFERENCE",
