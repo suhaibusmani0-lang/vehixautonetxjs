@@ -1,85 +1,111 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import { Star, ShoppingCart } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 
+const featuredProducts = [
+  {
+    id: 1,
+    sku: "BMW-335i-2011-F-PAD-CER-01",
+    title: "Ceramic Brake Pads - Front",
+    brand: "BMW",
+    model: "335i",
+    years: "2011-2016",
+    category: "Brake Pads",
+    axle: "Front",
+    material: "Ceramic",
+    price: 89.99,
+    msrp: 129.99,
+    rating: 4.8,
+    reviews: 124,
+    stock: 15,
+    query: "BMW 335i Front Ceramic Brake Pads OEM", // eBay search query
+    fallbackImage: "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400&h=300&fit=crop",
+    features: ["Low dust", "Quiet operation", "Extended life"]
+  },
+  {
+    id: 2,
+    sku: "AUDI-A4-2018-ENG-FIL-01",
+    title: "High-Flow Air Filter",
+    brand: "Audi",
+    model: "A4",
+    years: "2017-2023",
+    category: "Filters",
+    axle: "Engine",
+    style: "Performance",
+    price: 49.99,
+    msrp: 65.00,
+    rating: 4.9,
+    reviews: 89,
+    stock: 32,
+    query: "Audi A4 Engine Air Filter OEM", // eBay search query
+    fallbackImage: "https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?w=400&h=300&fit=crop",
+    features: ["Increased airflow", "Washable", "Long lasting"]
+  },
+  {
+    id: 3,
+    sku: "TOYOTA-CAMRY-2020-IGN-SPK-01",
+    title: "Platinum Spark Plugs (Set of 4)",
+    brand: "Toyota",
+    model: "Camry",
+    years: "2018-2024",
+    category: "Ignition",
+    axle: "Engine",
+    material: "Platinum",
+    price: 54.99,
+    msrp: 79.99,
+    rating: 4.6,
+    reviews: 203,
+    stock: 25,
+    query: "Toyota Camry Platinum Spark Plugs Set of 4 OEM", // eBay search query
+    fallbackImage: "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400&h=300&fit=crop",
+    features: ["Better fuel economy", "Quick starts", "Durability"]
+  },
+  {
+    id: 4,
+    sku: "MERCEDES-C300-2019-ELE-ALT-01",
+    title: "Premium Alternator",
+    brand: "Mercedes-Benz",
+    model: "C300",
+    years: "2015-2021",
+    category: "Electrical",
+    axle: "Electrical",
+    style: "OEM Spec",
+    price: 199.99,
+    msrp: 299.99,
+    rating: 4.7,
+    reviews: 67,
+    stock: 12,
+    query: "Mercedes C300 Alternator OEM", // eBay search query
+    fallbackImage: "https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?w=400&h=300&fit=crop",
+    features: ["High output", "Tested reliability", "Premium quality"]
+  }
+];
+
 const FeaturedProducts = () => {
-  const featuredProducts = [
-    {
-      id: 1,
-      sku: "BMW-335i-2011-F-PAD-CER-01",
-      title: "Ceramic Brake Pads - Front",
-      brand: "BMW",
-      model: "335i",
-      years: "2011-2016",
-      category: "Brake Pads",
-      axle: "Front",
-      material: "Ceramic",
-      price: 89.99,
-      msrp: 129.99,
-      rating: 4.8,
-      reviews: 124,
-      stock: 15,
-      image: "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400&h=300&fit=crop",
-      features: ["Low dust", "Quiet operation", "Extended life"]
-    },
-    {
-      id: 2,
-      sku: "AUDI-A4-2018-ENG-FIL-01",
-      title: "High-Flow Air Filter",
-      brand: "Audi",
-      model: "A4",
-      years: "2017-2023",
-      category: "Filters",
-      axle: "Engine",
-      style: "Performance",
-      price: 49.99,
-      msrp: 65.00,
-      rating: 4.9,
-      reviews: 89,
-      stock: 32,
-      image: "https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?w=400&h=300&fit=crop",
-      features: ["Increased airflow", "Washable", "Long lasting"]
-    },
-    {
-      id: 3,
-      sku: "TOYOTA-CAMRY-2020-IGN-SPK-01",
-      title: "Platinum Spark Plugs (Set of 4)",
-      brand: "Toyota",
-      model: "Camry",
-      years: "2018-2024",
-      category: "Ignition",
-      axle: "Engine",
-      material: "Platinum",
-      price: 54.99,
-      msrp: 79.99,
-      rating: 4.6,
-      reviews: 203,
-      stock: 25,
-      image: "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400&h=300&fit=crop",
-      features: ["Better fuel economy", "Quick starts", "Durability"]
-    },
-    {
-      id: 4,
-      sku: "MERCEDES-C300-2019-ELE-ALT-01",
-      title: "Premium Alternator",
-      brand: "Mercedes-Benz",
-      model: "C300",
-      years: "2015-2021",
-      category: "Electrical",
-      axle: "Electrical",
-      style: "OEM Spec",
-      price: 199.99,
-      msrp: 299.99,
-      rating: 4.7,
-      reviews: 67,
-      stock: 12,
-      image: "https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?w=400&h=300&fit=crop",
-      features: ["High output", "Tested reliability", "Premium quality"]
-    }
-  ];
+  const [images, setImages] = useState<Record<number, string>>({});
+  const [loading, setLoading] = useState<Record<number, boolean>>({});
+
+  useEffect(() => {
+    featuredProducts.forEach(async (product) => {
+      setLoading((prev) => ({ ...prev, [product.id]: true }));
+      try {
+        const res = await fetch(`/api/ebay-search?q=${encodeURIComponent(product.query)}`);
+        const data = await res.json();
+        
+        if (data.imageUrl) {
+          setImages((prev) => ({ ...prev, [product.id]: data.imageUrl }));
+        }
+      } catch (error) {
+        console.error("Failed to fetch image for", product.title);
+      } finally {
+        setLoading((prev) => ({ ...prev, [product.id]: false }));
+      }
+    });
+  }, []);
 
   const formatPrice = (price: number) => `$${price.toFixed(2)}`;
 
@@ -110,22 +136,30 @@ const FeaturedProducts = () => {
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           {featuredProducts.map((product) => (
-            <Card key={product.id} className="group hover:shadow-lg transition-shadow">
+            <Card key={product.id} className="group hover:shadow-lg transition-shadow overflow-hidden">
               <CardHeader className="p-0">
-                <div className="relative overflow-hidden rounded-t-lg">
-                  <img 
-                    src={product.image} 
-                    alt={product.title}
-                    className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300"
-                  />
+                <div className="relative overflow-hidden rounded-t-lg h-48 bg-white flex items-center justify-center">
+                  
+                  {/* eBay API Loading Logic */}
+                  {loading[product.id] ? (
+                    <div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
+                  ) : (
+                    <img 
+                      src={images[product.id] || product.fallbackImage} 
+                      alt={product.title}
+                      // Note: Changed from object-cover to object-contain so real parts don't get cropped
+                      className={`w-full h-full group-hover:scale-105 transition-transform duration-300 ${images[product.id] ? 'object-contain p-4' : 'object-cover'}`}
+                    />
+                  )}
+
                   <div className="absolute top-3 left-3">
-                    <Badge variant="secondary" className="bg-primary text-primary-foreground">
+                    <Badge variant="secondary" className="bg-primary text-primary-foreground shadow-sm">
                       {product.brand}
                     </Badge>
                   </div>
                   {product.msrp > product.price && (
                     <div className="absolute top-3 right-3">
-                      <Badge variant="destructive">
+                      <Badge variant="destructive" className="shadow-sm">
                         Save {Math.round(((product.msrp - product.price) / product.msrp) * 100)}%
                       </Badge>
                     </div>
@@ -135,7 +169,7 @@ const FeaturedProducts = () => {
               
               <CardContent className="p-4">
                 <div className="mb-2">
-                  <h3 className="font-semibold text-lg leading-tight mb-1">
+                  <h3 className="font-semibold text-lg leading-tight mb-1 truncate">
                     {product.title}
                   </h3>
                   <p className="text-sm text-muted-foreground">
@@ -153,7 +187,7 @@ const FeaturedProducts = () => {
                   </span>
                 </div>
 
-                <div className="mb-3">
+                <div className="mb-3 flex flex-wrap gap-1">
                   {product.features.map((feature, index) => (
                     <span key={index} className="text-xs text-muted-foreground">
                       {feature}{index < product.features.length - 1 ? " • " : ""}

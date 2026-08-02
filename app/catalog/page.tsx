@@ -1,48 +1,76 @@
 "use client";
 
 import { useSearchParams } from "next/navigation";
-import { Suspense } from "react";
+import { Suspense, useEffect, useState } from "react";
 import CustomerForm from "@/components/CustomerForm";
-import { Card, CardContent } from "@/components/ui/card";
+import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 
-// Ye function part ke naam ke hisaab se image decide karega
-const getPartImage = (partName: string | null) => {
-  if (!partName) return "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=800&q=80"; // Default Generic Parts
-
-  const name = partName.toLowerCase();
+// Smart Fallback: Agar Wikipedia par car na mile, toh brand ke hisaab se ek HD car photo
+const getCarFallbackImage = (make: string | null) => {
+  if (!make) return "https://images.unsplash.com/photo-1494976388531-d1058494cdd8?w=800&q=80"; // Generic Car
   
-  if (name.includes("brake") || name.includes("rotor") || name.includes("caliper") || name.includes("pad")) {
-    return "https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?w=800&q=80"; // Brakes
-  }
-  if (name.includes("engine") || name.includes("filter") || name.includes("spark") || name.includes("pump")) {
-    return "https://images.unsplash.com/photo-1619642751034-765dfdf7c58e?w=800&q=80"; // Engine/Mechanic
-  }
-  if (name.includes("light") || name.includes("lamp") || name.includes("lens")) {
-    return "https://images.unsplash.com/photo-1593368858364-77a835a805c8?w=800&q=80"; // Lights
-  }
-  if (name.includes("wheel") || name.includes("tire") || name.includes("rim")) {
-    return "https://images.unsplash.com/photo-1601362840469-51e4d8d58785?w=800&q=80"; // Wheels
-  }
-  if (name.includes("glass") || name.includes("window") || name.includes("windshield")) {
-    return "https://images.unsplash.com/photo-1512354734612-4ebdf768fba4?w=800&q=80"; // Glass/Windows
-  }
-  if (name.includes("a/c") || name.includes("condenser") || name.includes("compressor")) {
-    return "https://images.unsplash.com/photo-1635399566978-75c13dc0972b?w=800&q=80"; // AC/Cooling
-  }
-
-  // Agar upar me se koi match nahi hua toh ye default image aayegi
-  return "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=800&q=80"; 
+  const m = make.toLowerCase();
+  if (m.includes("bmw")) return "https://images.unsplash.com/photo-1556189250-72ba954cfc2b?w=800&q=80";
+  if (m.includes("audi")) return "https://images.unsplash.com/photo-1606152421802-db97b9c7a11b?w=800&q=80";
+  if (m.includes("mercedes") || m.includes("benz")) return "https://images.unsplash.com/photo-1618843479313-40f8afb4b4d8?w=800&q=80";
+  if (m.includes("ford")) return "https://images.unsplash.com/photo-1559416523-140ddc3d238c?w=800&q=80";
+  if (m.includes("toyota")) return "https://images.unsplash.com/photo-1629897048514-3dd74142fb79?w=800&q=80";
+  if (m.includes("honda")) return "https://images.unsplash.com/photo-1605816988069-b11383b50717?w=800&q=80";
+  if (m.includes("chevrolet") || m.includes("chevy")) return "https://images.unsplash.com/photo-1552519507-da3b142c6e3d?w=800&q=80";
+  if (m.includes("porsche")) return "https://images.unsplash.com/photo-1503376710356-6f8afcd0e29b?w=800&q=80";
+  
+  return "https://images.unsplash.com/photo-1494976388531-d1058494cdd8?w=800&q=80"; 
 };
 
 function CatalogContent() {
   const searchParams = useSearchParams();
-  const year = searchParams.get("year");
-  const make = searchParams.get("make");
-  const model = searchParams.get("model");
+  const year = searchParams.get("year") || "";
+  const make = searchParams.get("make") || "";
+  const model = searchParams.get("model") || "";
   const part = searchParams.get("part");
 
-  const imageUrl = getPartImage(part);
+  const fullVehicleName = `${year} ${make} ${model}`.trim();
+  const requestedPartName = part ? part : `Parts for ${fullVehicleName}`;
+  const ebaySearchQuery = `${make} ${model} ${part || "parts"}`.trim();
+
+  const [carImageUrl, setCarImageUrl] = useState<string | null>(null);
+  const [isCarLoading, setIsCarLoading] = useState(false);
+
+  // 🔥 WIKIPEDIA API HACK: GET REAL CAR PHOTOS 100% FREE 🔥
+  useEffect(() => {
+    if (!make || !model) return;
+
+    const fetchWikipediaCarImage = async () => {
+      setIsCarLoading(true);
+      try {
+        const query = `${make} ${model}`;
+        const url = `https://en.wikipedia.org/w/api.php?action=query&generator=search&gsrsearch=intitle:"${query}"&prop=pageimages&format=json&pithumbsize=800&origin=*`;
+        
+        const res = await fetch(url);
+        const data = await res.json();
+
+        // Check if Wikipedia found the car page and has a photo
+        if (data.query && data.query.pages) {
+          const pages = Object.values(data.query.pages) as any[];
+          const pageWithImage = pages.find(p => p.thumbnail && p.thumbnail.source);
+          
+          if (pageWithImage) {
+            setCarImageUrl(pageWithImage.thumbnail.source);
+            return;
+          }
+        }
+      } catch (error) {
+        console.error("Wikipedia API error:", error);
+      } finally {
+        setIsCarLoading(false);
+      }
+    };
+
+    fetchWikipediaCarImage();
+  }, [make, model]);
+
+  const displayCarImage = carImageUrl || getCarFallbackImage(make);
 
   return (
     <div className="container mx-auto px-4 py-12 md:py-20 min-h-screen">
@@ -52,23 +80,28 @@ function CatalogContent() {
             Request Part Availability
           </h1>
           <p className="text-muted-foreground text-lg">
-            Review your selected part details and fill out the form below to get a quote.
+            Review your selected vehicle details and fill out the form below to get a quote.
           </p>
         </div>
         
-        {/* Product Details Card with Image */}
+        {/* Vehicle Details Card */}
         <Card className="overflow-hidden shadow-lg border-primary/20">
           <div className="flex flex-col md:flex-row">
-            {/* Image Section */}
-            <div className="md:w-2/5 h-64 md:h-auto relative bg-muted">
-              <img 
-                src={imageUrl} 
-                alt={part || "Auto Part"} 
-                className="w-full h-full object-cover"
-              />
+            
+            {/* Dynamic Car Image Section */}
+            <div className="md:w-2/5 h-64 md:h-auto relative bg-muted flex items-center justify-center overflow-hidden">
+              {isCarLoading ? (
+                <div className="w-10 h-10 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
+              ) : (
+                <img 
+                  src={displayCarImage} 
+                  alt={fullVehicleName} 
+                  className="w-full h-full object-cover transition-opacity duration-500"
+                />
+              )}
               <div className="absolute top-4 left-4">
-                <Badge className="bg-primary text-primary-foreground text-sm px-3 py-1">
-                  OEM Fitment
+                <Badge className="bg-primary text-primary-foreground text-sm px-3 py-1 shadow-md">
+                  {make ? `${make} Verified` : "OEM Fitment"}
                 </Badge>
               </div>
             </div>
@@ -79,7 +112,7 @@ function CatalogContent() {
                 Selected Vehicle
               </div>
               <h2 className="text-2xl md:text-3xl font-bold text-foreground mb-4">
-                {year} {make} {model}
+                {fullVehicleName}
               </h2>
               
               {part ? (
@@ -99,8 +132,11 @@ function CatalogContent() {
         </Card>
       </div>
 
-      {/* Form Section */}
-      <CustomerForm />
+      {/* Form Section (Works perfectly as before) */}
+      <CustomerForm 
+        partName={requestedPartName} 
+        searchQuery={ebaySearchQuery} 
+      />
     </div>
   );
 }
