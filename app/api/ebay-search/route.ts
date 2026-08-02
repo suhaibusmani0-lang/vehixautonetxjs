@@ -16,7 +16,6 @@ export async function GET(request: Request) {
   }
 
   try {
-    // 1. eBay se Authorization Token lena
     const auth = Buffer.from(`${clientId}:${clientSecret}`).toString('base64');
     const tokenResponse = await fetch('https://api.ebay.com/identity/v1/oauth2/token', {
       method: 'POST',
@@ -34,8 +33,7 @@ export async function GET(request: Request) {
       throw new Error('Failed to get access token from eBay');
     }
 
-    // 2. Token aur Query ko use karke Auto Parts (Category 6030) ki image dhoondhna
-    const searchResponse = await fetch(`https://api.ebay.com/buy/browse/v1/item_summary/search?q=${encodeURIComponent(query)}&category_ids=6030&limit=1`, {
+    const searchResponse = await fetch(`https://api.ebay.com/buy/browse/v1/item_summary/search?q=${encodeURIComponent(query)}&filter=conditionIds:{1000}&limit=3`, {
       headers: {
         'Authorization': `Bearer ${accessToken}`,
         'X-EBAY-C-MARKETPLACE-ID': 'EBAY_US'
@@ -44,13 +42,31 @@ export async function GET(request: Request) {
 
     const searchData = await searchResponse.json();
 
-    // 3. Agar item mil gaya toh uski photo return karna
+    let selectedItem = null;
     if (searchData.itemSummaries && searchData.itemSummaries.length > 0) {
-      const item = searchData.itemSummaries[0];
-      const imageUrl = item.image?.imageUrl || null;
-      return NextResponse.json({ imageUrl, title: item.title });
+      selectedItem = searchData.itemSummaries.find((item: any) => item.image?.imageUrl) || searchData.itemSummaries[0];
+    }
+
+    if (selectedItem && selectedItem.image) {
+      const mainImageUrl = selectedItem.image.imageUrl;
+      const additionalImages = selectedItem.additionalImages?.map((img: any) => img.imageUrl) || [];
+      const allImages = [mainImageUrl, ...additionalImages];
+
+      // 🔥 Extra Details Extract Kar Rahe Hain 🔥
+      const brand = selectedItem.brand || null;
+      const mpn = selectedItem.mpn || null; // Manufacturer Part Number
+      const price = selectedItem.price ? `${selectedItem.price.currency === 'USD' ? '$' : selectedItem.price.currency} ${selectedItem.price.value}` : null;
+
+      return NextResponse.json({ 
+        imageUrl: mainImageUrl,
+        images: allImages,
+        title: selectedItem.title,
+        brand: brand,
+        mpn: mpn,
+        price: price
+      });
     } else {
-      return NextResponse.json({ imageUrl: null, message: 'No image found' });
+      return NextResponse.json({ imageUrl: null, images: [], message: 'No image found' });
     }
 
   } catch (error) {
